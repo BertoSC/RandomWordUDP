@@ -26,7 +26,8 @@ public class RandomWordServerWorker implements Runnable{
             con.setRequestMethod("GET");
             StringBuilder json = new StringBuilder();
             Gson gson = new GsonBuilder()
-                    .setPrettyPrinting().create();
+                    .setPrettyPrinting()
+                    .create();
             if (con.getResponseCode()== HttpURLConnection.HTTP_OK){
                 try (BufferedReader br = new BufferedReader(new InputStreamReader(con.getInputStream()))){
                     String line;

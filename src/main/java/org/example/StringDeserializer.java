@@ -10,8 +10,9 @@ public class StringDeserializer implements JsonDeserializer<List<String>> {
     @Override
     public List<String> deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
         JsonArray ja = jsonElement.getAsJsonArray();
-
-
-        return new ArrayList<>();
+        List<String> palabras = new ArrayList<>();
+        String word = ja.get(0).getAsString();
+        palabras.add(word);
+        return palabras;
     }
 }
