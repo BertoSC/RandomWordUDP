@@ -2,17 +2,22 @@ package org.example;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.reflect.TypeToken;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.UnsupportedEncodingException;
+import java.lang.reflect.Type;
 import java.net.*;
+import java.util.List;
 
 public class RandomWordServerWorker implements Runnable{
     private DatagramSocket udpSocket;
     byte [] buffer = new byte[1024];
     private final String URL= "https://random-word-api.herokuapp.com/word?length=";
     private final String DEFAULT_URL= "https://random-word-api.herokuapp.com/word?length=5";
+    Type listString = new TypeToken<List<String>>(){}.getType();
 
     public RandomWordServerWorker(DatagramSocket udpSocket){
         this.udpSocket=udpSocket;
@@ -21,7 +26,7 @@ public class RandomWordServerWorker implements Runnable{
     private String solicitarAPI(String [] args) {
         URL peticion = null;
         try {
-            new URI(DEFAULT_URL).toURL();
+            peticion = new URI(DEFAULT_URL).toURL();
             HttpURLConnection con = (HttpURLConnection) peticion.openConnection();
             con.setRequestMethod("GET");
             StringBuilder json = new StringBuilder();
@@ -36,7 +41,8 @@ public class RandomWordServerWorker implements Runnable{
                     }
                 }
             }
-            String palabra = gson.fromJson(json, );
+           List<String> palabras = gson.fromJson(json.toString(), listString);
+            return palabras.get(0);
 
 
 
@@ -55,16 +61,27 @@ public class RandomWordServerWorker implements Runnable{
 
     @Override
     public void run() {
-        DatagramPacket peticion = new DatagramPacket(buffer, buffer.length);
-        udpSocket.receive(peticion);
-        String palabra = new String(peticion.getData(), 0, peticion.getLength(), "UTF-8");
-        String [] args = palabra.split(" ");
-        String palabra = solicitarAPI(args);
-            
-        }        
+        try {
+            DatagramPacket peticion = new DatagramPacket(buffer, buffer.length);
+            udpSocket.receive(peticion);
+            String comando = new String(peticion.getData(), 0, peticion.getLength(), "UTF-8");
+            String[] args = comando.split(" ");
+            String wordResponse = solicitarAPI(args);
+            int clientPort = peticion.getPort();
+            InetAddress address = peticion.getAddress();
+            buffer = wordResponse.getBytes();
+            DatagramPacket answer = new DatagramPacket(buffer, buffer.length, address, clientPort);
+            udpSocket.send(answer);
+        } catch (UnsupportedEncodingException e) {
+            throw new RuntimeException(e);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
+    }
     }
 
 
 
 
-}
+
