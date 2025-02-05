@@ -23,10 +23,10 @@ public class RandomWordServerWorker implements Runnable{
         this.udpSocket=udpSocket;
     }
 
-    private String solicitarAPI(String [] args) {
+    private String solicitarAPI(String urlPeticion) {
         URL peticion = null;
         try {
-            peticion = new URI(DEFAULT_URL).toURL();
+            peticion = new URI(urlPeticion).toURL();
             HttpURLConnection con = (HttpURLConnection) peticion.openConnection();
             con.setRequestMethod("GET");
             StringBuilder json = new StringBuilder();
@@ -66,7 +66,9 @@ public class RandomWordServerWorker implements Runnable{
             udpSocket.receive(peticion);
             String comando = new String(peticion.getData(), 0, peticion.getLength(), "UTF-8");
             String[] args = comando.split(" ");
-            String wordResponse = solicitarAPI(args);
+            String urlPeticion= gestionarPeticion(args);
+            System.out.println(urlPeticion);
+            String wordResponse = solicitarAPI(urlPeticion);
             int clientPort = peticion.getPort();
             InetAddress address = peticion.getAddress();
             buffer = wordResponse.getBytes();
@@ -79,7 +81,15 @@ public class RandomWordServerWorker implements Runnable{
         }
 
     }
+
+    private String gestionarPeticion(String[] args) {
+        if (args[0].equals("WORD")){
+            return URL+args[1];
+        } else {
+            return DEFAULT_URL;
+        }
     }
+}
 
 
 
