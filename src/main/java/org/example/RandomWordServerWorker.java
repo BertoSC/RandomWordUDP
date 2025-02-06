@@ -41,10 +41,8 @@ public class RandomWordServerWorker implements Runnable{
                     }
                 }
             }
-           List<String> palabras = gson.fromJson(json.toString(), listString);
+            List<String> palabras = gson.fromJson(json.toString(), listString);
             return palabras.get(0);
-
-
 
         } catch (MalformedURLException e) {
             throw new RuntimeException(e);
@@ -55,8 +53,6 @@ public class RandomWordServerWorker implements Runnable{
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-
-
     }
 
     @Override
@@ -79,7 +75,6 @@ public class RandomWordServerWorker implements Runnable{
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-
     }
 
     private String gestionarPeticion(String[] args) {
