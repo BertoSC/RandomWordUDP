@@ -11,6 +11,7 @@ public class RandomWordClient {
 
     public static void main(String[] args) {
     byte [] buffer = new byte[1024];
+    byte [] bufferRespuesta = new byte[1024];
     try {
         InetAddress serverAdress = InetAddress.getByName("localhost");
         DatagramSocket socketUDP = new DatagramSocket();
@@ -22,7 +23,7 @@ public class RandomWordClient {
         DatagramPacket paquete = new DatagramPacket(buffer, buffer.length, serverAdress, PORT);
         socketUDP.send(paquete);
 
-        DatagramPacket respuesta = new DatagramPacket(buffer, buffer.length);
+        DatagramPacket respuesta = new DatagramPacket(bufferRespuesta, bufferRespuesta.length);
         socketUDP.receive(respuesta);
         String palabra = new String(respuesta.getData(), 0, respuesta.getLength(), "UTF-8");
         System.out.println(palabra);
